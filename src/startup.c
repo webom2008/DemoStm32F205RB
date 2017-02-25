@@ -19,6 +19,11 @@ void Default_Handler(void);
 
 extern int main(void);
 
+// FreeRTOS function.
+extern void vPortSVCHandler(void);
+extern void xPortPendSVHandler(void);
+extern void xPortSysTickHandler(void);
+
 void WEAK Reset_Handler(void);
 void WEAK NMI_Handler(void);
 void WEAK HardFault_Handler(void);
@@ -126,11 +131,11 @@ void (* const g_pfnVectors[])(void) = {
     0                          ,// Reserved
     0                          ,// Reserved
     0                          ,// Reserved
-    SVC_Handler                ,// SVCall Handler
+    vPortSVCHandler            ,// -QWB-20170225:FreeRTOS SVCall Handler
     DebugMon_Handler           ,// Debug Monitor Handler
     0                          ,// Reserved
-    PendSV_Handler             ,// PendSV Handler
-    SysTick_Handler            ,// SysTick Handler
+    xPortPendSVHandler         ,// -QWB-20170225:FreeRTOS PendSV Handler
+    xPortSysTickHandler        ,// -QWB-20170225:FreeRTOS SysTick Handler
     
     // External Interrupts
     WWDG_IRQHandler                   ,// Window WatchDog                                        

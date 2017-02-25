@@ -87,11 +87,12 @@ libfreertos.a:
 	@cd $(FREERTOS_LIB_DIR)/portable/MemMang && \
 		$(CC) $(CFLAGSlib) \
 			-D"assert_param(expr)=((void)0)" \
-			heap_3.c
+			heap_2.c
 	@cd $(FREERTOS_LIB_DIR) && \
 		$(CC) $(CFLAGSlib) -fno-strict-aliasing \
 			-D"assert_param(expr)=((void)0)" \
             list.c \
+            timers.c \
             queue.c \
             tasks.c
 	@$(AR) cr $(LIBDIR)/$@ \

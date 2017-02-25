@@ -20,13 +20,13 @@
   */ 
 
 /* Includes ------------------------------------------------------------------*/ 
-#include "configs.h"
+#include "includes.h"
 #include "system_tick.h"
-#include "usart.h"
+
+#define UNUSED(x)           ((void)(x))
 
 #define DBG_APP_INFO
 #ifdef DBG_APP_INFO
-#include "udprintf.h"
 #define DBG(fmt, arg...)        udprintf("\r\n[USB]App.c:"fmt, ##arg)
 #else
 #define DBG(fmt, arg...)        do{}while(0)
@@ -40,18 +40,18 @@
   * @}
   */ 
 
-
 /** @defgroup APP_HID_Private_Functions
   * @{
   */ 
-static void test_systemtick_and_uart(void)
+static void uart_Task(void *pvParameters)
 {
+    int count = 0;
+    UNUSED(pvParameters);
 
-    static u32 tick = 0;
-    if (IsOnTime(tick))
+    while(1)
     {
-        tick = SysTick_Get() + 1000;
-        DBG("tick=%d", SysTick_Get());
+        DBG("count=%d", count++);
+        vTaskDelay(500/portTICK_RATE_MS);
     }
 }
 
@@ -67,16 +67,15 @@ int main(void)
   file (startup_stm32fxxx_xx.s) before to branch to application main.
   To reconfigure the default setting of SystemInit() function, refer to
   system_stm32fxxx.c file
-  */  
-    SysTick_Init();
+  */
+
+    NVIC_PriorityGroupConfig( NVIC_PriorityGroup_4  );
+
     USART_Configuration();
 
-    while (1)
-    {
-        #if (CFG_ON != CFG_UART1_TIM9_HANDLE)
-        Uart_Server();
-        #endif
-    }
+    xTaskCreate( uart_Task, "UART", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
+    vTaskStartScheduler();
+    return 0;
 } 
 
 #ifdef USE_FULL_ASSERT
