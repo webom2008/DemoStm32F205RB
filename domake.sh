@@ -2,7 +2,7 @@
 
 
 # export tool-chain env
-#source ./env.rc
+source ./env.rc
 
 
 make clean
