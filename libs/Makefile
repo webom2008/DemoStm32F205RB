@@ -78,6 +78,7 @@ libstm32usbotg.a:
 
 clean:
 	rm -f $(STMLIB)/CMSIS/Device/ST/STM32F2xx/Source/Templates/system_stm32f2xx.o
+	rm -f $(STMLIB)/CMSIS/CM3/CoreSupport/core_cm3.o
 	rm -f $(STMLIB)/STM32F2xx_StdPeriph_Driver/src/*.o
 	rm -f $(STMUSB_DEVICE_LIB)/Core/src/*.o
 	rm -f $(STMUSB_HOST_LIB)/src/*.o

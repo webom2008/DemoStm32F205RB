@@ -1,7 +1,7 @@
 #!/bin/bash
 
-TARGET=gcc-arm-none-eabi-5_4-2016q3
-#TARGET=arm-2011.03
+#TARGET=gcc-arm-none-eabi-5_4-2016q3
+TARGET=arm-2011.03
 
 #tar
 #tar -czf $TARGET.tar.gz $TARGET
