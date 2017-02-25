@@ -39,6 +39,7 @@ STM_USB_LIB_USED=OFF
 STM_USB_DEVICE_LIB_USED=OFF
 STM_USB_HOST_LIB_USED=OFF
 STM_USB_OTG_LIB_USED=OFF
+SYS_FREERTOS_USED=ON
 
 
 #Adust the following line to the library in use
@@ -56,6 +57,9 @@ endif
 ifeq ($(STM_USB_OTG_LIB_USED), ON)
 STMUSB_OTG_LIB=$(STMUSBLIB)/STM32_USB_OTG_Driver
 endif
+ifeq ($(SYS_FREERTOS_USED), ON)
+FREERTOS_LIB_DIR=$(LIBDIR)/FreeRTOSV8.2.1/Source
+endif
 #============================================================================#
 TC=arm-none-eabi
 CC=$(TC)-gcc
@@ -63,6 +67,8 @@ LD=$(TC)-ld -v
 OBJCOPY=$(TC)-objcopy
 AR=$(TC)-ar
 GDB=$(TC)-gdb
+
+#========================== include c header ================================#
 INCLUDE=-I$(TOP)/inc
 INCLUDE+=-I$(STMLIB)/CMSIS/CM3/CoreSupport
 INCLUDE+=-I$(STMLIB)/CMSIS/CM3/DeviceSupport/ST/STM32F2xx
@@ -77,6 +83,11 @@ endif
 ifeq ($(STM_USB_OTG_LIB_USED), ON)
 INCLUDE+=-I$(STMUSB_OTG_LIB)/inc
 endif
+ifeq ($(SYS_FREERTOS_USED), ON)
+INCLUDE+=-I$(FREERTOS_LIB_DIR)/portable/GCC/ARM_CM3
+INCLUDE+=-I$(FREERTOS_LIB_DIR)/include
+endif
+
 COMMONFLAGS=-g -mcpu=cortex-m3 -mthumb
 COMMONFLAGSlib=$(COMMONFLAGS)
 #Commands for general Makefile and src Makefile
@@ -128,7 +139,10 @@ else
     COMMONFLAGSlib+=-O3
     InfoTextLib=libs (full optimize, -O3)
 endif
-CFLAGSlib+=$(COMMONFLAGSlib) -Wall -Werror $(INCLUDE)
+
+# -QWB- uncomment to convert waring to error
+#CFLAGSlib+=$(COMMONFLAGSlib) -Wall -Werror $(INCLUDE)
+CFLAGSlib+=$(COMMONFLAGSlib) -Wall $(INCLUDE)
 #=========add by QiuWeibo ±àÒëºê¿ª¹Ø ====================#
 CFLAGSlib+=-D STM32F2XX
 CFLAGSlib+=-D USE_STDPERIPH_DRIVER

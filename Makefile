@@ -15,6 +15,9 @@ endif
 ifeq ($(STM_USB_OTG_LIB_USED), ON)
 LDLIBS+=-lstm32usbotg
 endif
+ifeq ($(SYS_FREERTOS_USED), ON)
+LDLIBS+=-lfreertos
+endif
 
 STARTUP=startup.c
 

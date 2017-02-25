@@ -11,6 +11,9 @@ endif
 ifeq ($(STM_USB_OTG_LIB_USED), ON)
 LIBS+=libstm32usbotg.a
 endif
+ifeq ($(SYS_FREERTOS_USED), ON)
+LIBS+=libfreertos.a
+endif
 
 CFLAGSlib+=-c
 #CFLAGSlib+=-c -fno-strict-aliasing
@@ -74,6 +77,29 @@ libstm32usbotg.a:
 	@$(AR) cr $(LIBDIR)/$@ $(STMUSB_OTG_LIB)/src/*.o
 	@echo "done."
 
+libfreertos.a:
+	@echo "Building $@ ..."
+	@echo "cd $(FREERTOS_LIB_DIR)"
+	@cd $(FREERTOS_LIB_DIR)/portable/GCC/ARM_CM3 && \
+		$(CC) $(CFLAGSlib) \
+			-D"assert_param(expr)=((void)0)" \
+			port.c
+	@cd $(FREERTOS_LIB_DIR)/portable/MemMang && \
+		$(CC) $(CFLAGSlib) \
+			-D"assert_param(expr)=((void)0)" \
+			heap_3.c
+	@cd $(FREERTOS_LIB_DIR) && \
+		$(CC) $(CFLAGSlib) -fno-strict-aliasing \
+			-D"assert_param(expr)=((void)0)" \
+            list.c \
+            queue.c \
+            tasks.c
+	@$(AR) cr $(LIBDIR)/$@ \
+		$(FREERTOS_LIB_DIR)/portable/GCC/ARM_CM3/*.o \
+		$(FREERTOS_LIB_DIR)/portable/MemMang/*.o \
+		$(FREERTOS_LIB_DIR)/*.o
+	@echo "done."
+
 .PHONY: libs clean tshow
 
 clean:
@@ -83,6 +109,9 @@ clean:
 	rm -f $(STMUSB_DEVICE_LIB)/Core/src/*.o
 	rm -f $(STMUSB_HOST_LIB)/src/*.o
 	rm -f $(STMUSB_OTG_LIB)/src/*.o
+	rm -f $(FREERTOS_LIB_DIR)/portable/GCC/ARM_CM3/*.o
+	rm -f $(FREERTOS_LIB_DIR)/portable/MemMang/*.o
+	rm -f $(FREERTOS_LIB_DIR)/*.o
 	rm -f $(LIBS)
 tshow:
 	@echo "##################################################"
